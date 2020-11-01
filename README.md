@@ -23,13 +23,14 @@ PIN 25     | Tx
 PIN 26     | Rx
 
 ## **Compile and run**
-- Install [Visual Studio Code](https://code.visualstudio.com/Download)
-- Install [platform.io plugin](https://platformio.org/install/ide?install=vscode)
-- Clone (or download) this [repository](https://github.com/oskrs111/diy-co2-monitor/archive/main.zip)
+- Install [Visual Studio Code](https://code.visualstudio.com/Download).
+- Install [platform.io plugin](https://platformio.org/install/ide?install=vscode).
+- Clone (or download) this [repository](https://github.com/oskrs111/diy-co2-monitor/archive/main.zip).
 - Open folder with Visual Studio Code.
 - Wait to platform.io plugin to load.
 - Do Upload (note that you have to press the Boot button, on the ESP module, until the uploading starts).
 
 
+MIT License. \
 ![CC BY SA](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
 
