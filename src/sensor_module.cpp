@@ -15,16 +15,13 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #include "sensor_module.h"
 #include "config_module.h"
 #include "MHZ19.h"
-
 static SoftwareSerial serial(SENSOR_RX_PIN, SENSOR_TX_PIN);                   
-//static HardwareSerial serial(1);       
 static struct sensor_preferences* preferences = 0x00;
-
 static MHZ19 sensor;
 void sensor_module_init()
 {  
     preferences = &config_module_get_preferences()->sensor;
-    serial.begin(BAUDRATE);                                    
+    serial.begin(SENSOR_BAUDRATE);                                    
     sensor.begin(serial);                                
     if(preferences > 0x00)
     {
@@ -35,7 +32,7 @@ void sensor_module_init()
 
 void sensor_module_defaults(struct sensor_preferences* preferences)
 {
-    preferences->flags = SENSOR_FLAGS_DEFAULT;    
+    preferences->flags = SENSOR_FLAGS_DEFAULT;        
 }
 
 uint16_t sensor_module_ppm_read()

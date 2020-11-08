@@ -38,6 +38,7 @@ void config_module_set_defaults()
     memset(&preferences, 0x00, sizeof(union preferences_union));
     config_module_defaults(&preferences.preferences.common);
     sensor_module_defaults(&preferences.preferences.sensor);
+    display_module_defaults(&preferences.preferences.display);
 }
 
 void config_module_defaults(struct preferences_common* preferences)

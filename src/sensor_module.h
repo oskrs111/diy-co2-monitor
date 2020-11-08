@@ -14,7 +14,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #define SENSOR_MODULE_H
 #define SENSOR_RX_PIN 25                                          // Rx pin which the MHZ19 Tx pin is attached to
 #define SENSOR_TX_PIN 26                                          // Tx pin which the MHZ19 Rx pin is attached to
-#define BAUDRATE 9600         
+#define SENSOR_BAUDRATE 9600         
+#define SENSOR_MAX_PPM 5000          
+#define SENSOR_MIN_PPM 0
 
 #define SENSOR_FLAGS_DEFAULT 0x00
 #define SENSOR_FLAGS_AUTOCALIBRATION_ENABLE 0x01
@@ -22,6 +24,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 struct sensor_preferences
 {
     uint8_t flags;
+    uint8_t _align;
 };
 
 void sensor_module_init();

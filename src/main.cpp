@@ -26,8 +26,10 @@ void setup() {
 }
 
 void loop() {     
-  delay(1000);  
+  static uint32_t cnt = 0;
+  delay(1000);    
   display_module_clear();
+  display_module_set_reading(((cnt++) & 0x00000001)?1:0);
   sensor_tasker();  
   battery_tasker();
   display_module_update();

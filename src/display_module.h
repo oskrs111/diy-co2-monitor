@@ -10,12 +10,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+#define DISPLAY_TRACES_ENABLE 1
 #ifndef DISPLAY_MODULE_H
 #define DISPLAY_MODULE_H
-#define DISPLAY_MODULE_HISTORICAL_SPAN 60   /**< 60 minutes */
-#define DISPLAY_MODULE_SPAN_AVERAGE 60      /**< 60 seconds */
+#define DISPLAY_MODULE_HISTORICAL_SPAN 60   /**< 60 values */
+#define DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT 10
 #define DISPLAY_SDA_PIN 5
 #define DISPLAY_SCL_PIN 4
+
+struct display_preferences
+{
+    uint8_t average_interval; /**< In Seconds */
+    uint8_t _align;
+};
 
 struct st_ppm_value {
     struct st_ppm_value *p_prev;
@@ -27,10 +34,10 @@ struct st_ppm_value {
 struct st_ppm_historical 
 {
     struct st_ppm_value historical_values[DISPLAY_MODULE_HISTORICAL_SPAN];    
-    struct st_ppm_value *p_ppm_in;
+    struct st_ppm_value *p_ppm_in;    
+    uint8_t ppm_length;     
     uint16_t ppm_max;
-    uint16_t ppm_min;
-    uint8_t ppm_length;        
+    uint16_t ppm_min;   
     uint8_t _align[3];
 };
 
@@ -50,6 +57,7 @@ void display_module_init();
 void display_module_historical_init();
 void display_module_push_historical(uint16_t ppm);
 uint16_t display_module_get_average(uint16_t *data, uint16_t length);
+void display_module_max_min_update(uint16_t ppm);
 void display_module_clear();
 void display_module_update();
 void display_module_set_ppm(uint16_t ppm);
@@ -62,4 +70,6 @@ void display_module_set_reading(uint8_t state);
 void display_module_draw_ppm();
 void display_module_draw_ppm_graph();
 void display_module_draw_battery();
+
+void display_module_defaults(struct display_preferences* preferences);
 #endif
