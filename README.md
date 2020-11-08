@@ -15,6 +15,7 @@ Current hardware setup, includes support for (total cost about 22€):
 ## **Features**
 - Realtime CO2 level (ppm) monitoring.
 - 60 points historical data graph (with configurable average time).
+- More coming soon...
 
 ![prototype picture](./img/diy-co2-monitor-live-1.gif)
 
