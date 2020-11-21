@@ -34,14 +34,44 @@
       else text.attributes.x.nodeValue = 100;
     }
     function graph_update(historical) {
-      let d = '<path d="';
+      let d = "";
+
+      let svg_cords = document
+        .getElementById("graph_svg")
+        .getBoundingClientRect();
+
       let canvas_width = document
         .getElementById("canvas_width")
         .getBoundingClientRect();
 
+      let canvas_height = document
+        .getElementById("canvas_height")
+        .getBoundingClientRect();
+
+      let floor = canvas_height.bottom;
+
       let v_step = historical.max - historical.min;
-      let h_step = historical.max - historical.min;
-      d += `M${canvas_width.x},${canvas_width.y}`;
+      let h_step = canvas_width.width / historical.span / 2;
+      d += `M 0,${canvas_width.y} `;
+      d += `0,${(historical.data[0] - historical.min).toFixed(2)}  `;
+
+      for (let t = 1; t < historical.data.length; t++) {
+        d += `${h_step * t},${(historical.data[t] - historical.min).toFixed(
+          2
+        )}  `;
+      }
+
+      var svg = document.getElementById("graph_svg");
+      var newElement = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      newElement.setAttribute("d", d); //Set path's data
+      newElement.setAttribute("fill", "blue");
+      newElement.setAttribute("fill-opacity", "0.3");
+      newElement.style.stroke = "blue"; //Set stroke colour
+      newElement.style.strokeWidth = "1px"; //Set stroke width
+      svg.appendChild(newElement);
     }
 
     function init_graph_objects() {
@@ -177,6 +207,7 @@
       </div>
       <section id="graph-section">
         <svg
+          id="graph_svg"
           preserveAspectRatio="xMinYMid meet"
           width="90%"
           height="100%"
@@ -1163,6 +1194,18 @@
               </text>
             </g>
           </g>
+          <path
+            style="
+              fill: none;
+              stroke: #000000;
+              stroke-width: 0.264583px;
+              stroke-linecap: butt;
+              stroke-linejoin: miter;
+              stroke-opacity: 1;
+            "
+            d="M 0,104 432,0"
+            id="path1117"
+          />
         </svg>
       </section>
       <footer id="footer"></footer>
