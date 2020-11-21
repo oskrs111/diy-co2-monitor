@@ -12,12 +12,16 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 */
 #include <Arduino.h>
 #include <SoftwareSerial.h>                                
+#include "module_common.h"
 #include "sensor_module.h"
 #include "config_module.h"
 #include "MHZ19.h"
 static SoftwareSerial serial(SENSOR_RX_PIN, SENSOR_TX_PIN);                   
+static uint16_t warming = SENSOR_WARMING_TIME;
 static struct sensor_preferences* preferences = 0x00;
 static MHZ19 sensor;
+static uint16_t ppm = 0;
+static float temp = 0;
 void sensor_module_init()
 {  
     preferences = &config_module_get_preferences()->sensor;
@@ -35,7 +39,45 @@ void sensor_module_defaults(struct sensor_preferences* preferences)
     preferences->flags = SENSOR_FLAGS_DEFAULT;        
 }
 
-uint16_t sensor_module_ppm_read()
+uint16_t sensor_module_ppm_get()
 {
-    return sensor.getCO2(true, true);
+    return ppm;
+}
+
+float sensor_module_temperature_get()
+{
+    return temp;
+}
+
+uint16_t sensor_module_ppm_read()
+{   
+    uint16_t ppm_attempt = 0x00;
+    if( warming > 0x00 ) warming--;
+    ppm_attempt = sensor.getCO2(false, true);
+    if(ppm_attempt > 0x00)
+    /**< Sometimes 'sensor.getCO2(...)' returns zero */
+    {
+        ppm = ppm_attempt;
+    }
+#if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
+    Serial.print("> sensor_module_ppm_read() => ");
+    Serial.println(ppm);
+#endif    
+    return ppm;
+}
+
+float sensor_module_temperature_read()
+{       
+    temp = sensor.getTemperature(false, true);    
+#if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
+    Serial.print("> sensor_module_temp_read() => ");
+    Serial.println(temp);
+#endif    
+    return temp;
+}
+
+uint8_t sensor_module_warming()
+{
+    static uint8_t r = (warming > 0)?0x01:0x00;
+    return r;
 }

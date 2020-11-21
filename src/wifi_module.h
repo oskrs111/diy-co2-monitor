@@ -10,12 +10,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef MAIN_H
-#define MAIN_H
-#define APP_SERIAL_BAUDRATE 115200
+#ifndef WIFI_MODULE_H
+#define WIFI_MODULE_H
+#include <Arduino.h>
+#ifdef ESP32
+#include <WiFi.h>
+#elif defined(ESP8266)
+#include <ESP8266WiFi.h>
+#endif
+#define WIFI_SSID_MAX_LENGTH 256
+#define WIFI_PASSWORD_MAX_LENGTH 64
 
-void app_init();
-void sensor_tasker();
-void display_tasker();
-void battery_tasker();
+#define WIFI_FLAGS_ENABLE 0x00000001
+
+struct wifi_preferences
+{
+    uint32_t flags;
+    char ssid[WIFI_SSID_MAX_LENGTH];
+    char password[WIFI_PASSWORD_MAX_LENGTH];
+};
+
+void wifi_module_init(); 
+void wifi_module_defaults(struct wifi_preferences* preferences);
+char* wifi_module_get_ipaddress(uint8_t dots);
 #endif

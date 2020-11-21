@@ -13,26 +13,39 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 #include <Arduino.h>
 #include "main.h"
+#include "timers_module.h"
 #include "config_module.h"
 #include "display_module.h"
 #include "sensor_module.h"
+#include "wifi_module.h"
+#include "wserver_module.h"
+#include "ble_module.h"
 
-void setup() {
-  delay(1000); /**< Wait until serial terminal has done with platform messages.. */
+void setup() {  
   app_init();
   config_module_init();
-  sensor_module_init();  
-  display_module_init();
+  display_module_init();  
+  sensor_module_init();    
+  wifi_module_init();
+  wserver_module_init(); 
+  ble_module_init();
+  timers_module_init();
+  delay(1000);    
 }
 
-void loop() {     
-  static uint32_t cnt = 0;
-  delay(1000);    
-  display_module_clear();
-  display_module_set_reading(((cnt++) & 0x00000001)?1:0);
-  sensor_tasker();  
-  battery_tasker();
-  display_module_update();
+void loop() {       
+  
+  if(timers_module_test(tid_500ms) > 0x00)
+  {
+    sensor_tasker();    
+  } 
+
+  if(timers_module_test(tid_1000ms) > 0x00)
+  {
+    display_module_clear();
+    display_tasker();    
+    display_module_update();
+  }
 }
 
 void app_init()
@@ -45,10 +58,25 @@ void app_init()
 
 void sensor_tasker()
 {
-  uint16_t ppm = sensor_module_ppm_read();
-  display_module_set_ppm(ppm);
+  static uint8_t cnt = 0x00;
+  if(cnt++ & 0x01)
+  {
+    display_module_set_temperature(sensor_module_temperature_read());
+  }
+  else
+  {    
+    display_module_set_ppm(sensor_module_ppm_read());
+  }
+}
+
+void display_tasker()
+{
+  static uint8_t cnt = 0;
   display_module_draw_ppm();  
   display_module_draw_ppm_graph();
+  display_module_set_reading(((cnt++) & 0x01)?1:0);
+  display_module_set_warming((sensor_module_warming() & cnt)?1:0);
+  display_module_set_ipaddress(wifi_module_get_ipaddress(2));
 }
 
 void battery_tasker()

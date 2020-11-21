@@ -10,12 +10,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef MAIN_H
-#define MAIN_H
-#define APP_SERIAL_BAUDRATE 115200
-
-void app_init();
-void sensor_tasker();
-void display_tasker();
-void battery_tasker();
+#ifndef WSERVER_MODULE_H
+#define WSERVER_MODULE_H
+#include <Arduino.h>
+#include <ESPAsyncWebServer.h>
+void wserver_module_init();
+void wserver_root_request(AsyncWebServerRequest *request);
+void wserver_get_request(AsyncWebServerRequest *request);
+void wserver_post_request(AsyncWebServerRequest *request);
+void wserver_not_found(AsyncWebServerRequest *request);
+String wserver_toString(char* type, void* val);
 #endif

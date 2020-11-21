@@ -12,11 +12,13 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 */
 #ifndef SENSOR_MODULE_H
 #define SENSOR_MODULE_H
+#define SENSOR_TRACES_ENABLE 0
 #define SENSOR_RX_PIN 25                                          // Rx pin which the MHZ19 Tx pin is attached to
 #define SENSOR_TX_PIN 26                                          // Tx pin which the MHZ19 Rx pin is attached to
 #define SENSOR_BAUDRATE 9600         
 #define SENSOR_MAX_PPM 5000          
 #define SENSOR_MIN_PPM 0
+#define SENSOR_WARMING_TIME 180 /**< 3min, sccording to MH-Z19B datasheet */
 
 #define SENSOR_FLAGS_DEFAULT 0x00
 #define SENSOR_FLAGS_AUTOCALIBRATION_ENABLE 0x01
@@ -29,5 +31,9 @@ struct sensor_preferences
 
 void sensor_module_init();
 void sensor_module_defaults(struct sensor_preferences* preferences);
+uint16_t sensor_module_ppm_get();
+float sensor_module_temperature_get();
 uint16_t sensor_module_ppm_read();
+float sensor_module_temperature_read();
+uint8_t sensor_module_warming();
 #endif

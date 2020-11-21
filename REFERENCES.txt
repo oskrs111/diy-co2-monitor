@@ -1,7 +1,17 @@
+LIBS AND PROGRAMMING:
 https://randomnerdtutorials.com/esp32-built-in-oled-ssd1306/
 https://diyprojects.io/deal-esp32-development-board-with-128x64-pixel-oled-screen-ssd1306-lolin32-format/
-https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
 https://github.com/playelek/pinout-doit-32devkitv1
-https://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf
 https://projetsdiy.fr/data/uploads/2017/12/wemos-lolin32-esp32-fake-oled-ssd1306.jpg
+https://techtutorialsx.com/2017/10/07/esp32-arduino-timer-interrupts/
 https://d3s5r33r268y59.cloudfront.net/73055/products/thumbs/2017-03-12T05:46:25.432Z-schematic.png.2560x2560_q85.png
+
+ESP32:
+https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
+
+ESP-prog:
+https://docs.platformio.org/en/latest/plus/debug-tools/esp-prog.html#drivers
+https://community.platformio.org/t/esp32-pio-unified-debugger/4541/20
+
+MH-Z19B:
+https://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf

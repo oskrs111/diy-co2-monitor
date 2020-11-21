@@ -15,9 +15,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #define PREFERENCES_NAMESPACE "preferences"
 #define PREFERENCES_MAX_SIZE 128
 #define PREFERENCES_SIGNATURE 0x11AA22BB
-//Include here additional modules headers
+/**< Include here additional modules headers below */
 #include "sensor_module.h"
 #include "display_module.h"
+#include "wifi_module.h"
 
 struct preferences_common
 {
@@ -27,9 +28,10 @@ struct preferences_common
 struct preferences_group
 {
     struct preferences_common common;
-    //Include here additional modules structures
+    /**< Include here additional modules structures below */
     struct sensor_preferences sensor;
     struct display_preferences display;
+    struct wifi_preferences wifi;
 }; 
 
 union preferences_union
@@ -42,4 +44,5 @@ void config_module_init();
 void config_module_set_defaults();
 void config_module_defaults(struct preferences_common* preferences);
 struct preferences_group* config_module_get_preferences();
+void config_module_set_parameter(char* parameter, void* value);
 #endif
