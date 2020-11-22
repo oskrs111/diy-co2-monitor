@@ -332,9 +332,11 @@ char* display_module_historical_2_json()
     struct st_ppm_value *p = 0x00;
     char* j = &buffer[0];
     memset(j, 0x00, sizeof(buffer));
-    j += sprintf(j,"\"historical\":{\"span\":%d, \"interval\":%d, \"data\":[", 
+    j += sprintf(j,"\"historical\":{\"span\":%d, \"interval\":%d, \"max\":%d, \"min\":%d, \"data\":[",         
         DISPLAY_MODULE_HISTORICAL_SPAN, 
-        DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT);
+        DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT,
+        display_data.historical.ppm_max,
+        display_data.historical.ppm_min);
     p = display_data.historical.p_ppm_in->p_prev;
     for(uint16_t t = display_data.historical.ppm_length; t > 0; t--)
     {                
