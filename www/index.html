@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
   <script>
-    let _graph_tmarkers = [];
-    let _graph_tstrings = [];
-    let _graph_pmarkers = [];
+    const svgns = "http://www.w3.org/2000/svg";
+    let _graph_svg = {};
+    let _svg_cords = {};
     function init() {
       /*
           setInterval(() => {
             upadte_data();
           }, 1000);
     */
+      _graph_svg = document.getElementById("graph_svg");
+      _svg_cords = _graph_svg.getBoundingClientRect();
+      build_secene();
       let r = JSON.parse(
-        '{"ppm":795,"temp":31.00,"warming":1,"historical":{"span":60, "interval":10, "max":794, "min":747, "data":[794,793,790,789,787,785,783,782,781,779,776,775,774,772,771,770,769,768,767,765,764,762,762,760,760,759,759,758,758,757,756,756,756,755,755,756,755,753,752,751,750,750,748,748,748,748,747,747,747,747,747,747,747,747,747,747,748,747,747,747]}}'
+        '{"ppm":828,"temp":29.00,"warming":1,"historical":{"span":60, "interval":10, "max":870, "min":829, "data":[830,831,831,829,830,831,831,833,833,832,832,834,835,837,838,840,842,841,841,841,842,842,841,841,842,842,845,843,842,845,846,846,846,847,848,848,848,849,849,848,849,849,851,852,855,856,857,857,859,861,862,863,865,866,868,869,870,869,869,867]}}'
       );
       ppm_update(r.ppm);
       graph_update(r.historical);
@@ -23,7 +26,9 @@
       request.send();
       request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
-          ppm_update(JSON.parse(request.responseText).ppm);
+          let r = JSON.parse(request.responseText);
+          ppm_update(r.ppm);
+          graph_update(r.historical);
         } else {
         }
       };
@@ -34,41 +39,73 @@
       if (ppm > 999) text.attributes.x.nodeValue = 0;
       else text.attributes.x.nodeValue = 100;
     }
+
+    function build_secene() {
+      hline_append(0, _svg_cords.height * 0.9, _svg_cords.width * 0.99);
+      hline_append(0, _svg_cords.height * 0.8, _svg_cords.width * 0.99);
+      hline_append(0, _svg_cords.height * 0.6, _svg_cords.width * 0.99);
+      hline_append(0, _svg_cords.height * 0.4, _svg_cords.width * 0.99);
+      hline_append(0, _svg_cords.height * 0.2, _svg_cords.width * 0.99);
+
+      vline_append(_svg_cords.width * 0.0, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.1, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.2, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.3, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.4, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.5, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.6, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.7, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.8, _svg_cords.height * 0.9, 10);
+      vline_append(_svg_cords.width * 0.9, _svg_cords.height * 0.9, 10);
+    }
+
     function graph_update(historical) {
       let d = "";
-      let svg_cords = document.getElementById("graph_svg").getBoundingClientRect();
       let w_height_factor = 0.8;
-      let w_height = svg_cords.height * w_height_factor;
-      let v_offset = (svg_cords.height * (1 - w_height_factor)) / 2;
-      let h_step = svg_cords.width / historical.span;
-      d += `M 0,${svg_cords.height.toFixed(2)}\r\n`;
-      let pos = w_height * normalize(historical.max, historical.min, historical.data[0]);
-      d += `0,${(w_height - pos).toFixed(2)}\r\n`;
+      let w_height = _svg_cords.height * w_height_factor;
+      let v_offset = (_svg_cords.height * (1 - w_height_factor)) / 2;
+      let h_step = _svg_cords.width / historical.span;
+      d += `M 0,${_svg_cords.height.toFixed(2)} `;
+      let pos = w_height * normalize(historical.max, historical.min, historical.data[historical.data.length - 1]);
+      d += `0,${(w_height - pos).toFixed(2)} `;
 
       let t = 0;
       let x_pos = 0;
-      for (t = 1; t < historical.data.length; t++) {
+      for (t = historical.data.length - 2; t > 0; t--) {
         pos = w_height * normalize(historical.max, historical.min, historical.data[t]);
-        d += `${x_pos.toFixed(2)},${(v_offset + (w_height - pos)).toFixed(2)}\r\n`;
+        d += `${x_pos.toFixed(2)},${(v_offset + (w_height - pos)).toFixed(2)} `;
         x_pos += h_step;
       }
       x_pos -= h_step;
-      d += `${x_pos.toFixed(0)}, ${svg_cords.height.toFixed(0)}\r\n`;
+      d += `${x_pos.toFixed(0)}, ${_svg_cords.height.toFixed(0)} `;
 
-      let svg = document.getElementById("graph_svg");
-      let el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      let el = document.getElementById("graph_path");
       el.setAttribute("d", d);
-      el.setAttribute("fill", "url(#linearg)");
-      el.setAttribute("fill-opacity", "0.3");
-      el.setAttribute("stroke-linecap", "round");
-      el.style.stroke = "blue";
-      el.style.strokeWidth = "1px";
-      svg.appendChild(el);
     }
 
     function normalize(max, min, val) {
       return (val - min) / (max - min);
     }
+
+    function vline_append(x, y, length) {
+      let l = document.createElementNS(svgns, "line");
+      l.setAttribute("x1", x);
+      l.setAttribute("y1", y);
+      l.setAttribute("x2", x);
+      l.setAttribute("y2", y + length);
+      _graph_svg.appendChild(l);
+    }
+
+    function hline_append(x, y, length) {
+      let l = document.createElementNS(svgns, "line");
+      l.setAttribute("x1", x);
+      l.setAttribute("y1", y);
+      l.setAttribute("x2", x + length);
+      l.setAttribute("y2", y);
+      _graph_svg.appendChild(l);
+    }
+
+    function text_append(x, y, text) {}
   </script>
   <style>
     @import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");
@@ -84,6 +121,11 @@
     }
     svg {
       border: 1px solid transparent;
+    }
+
+    line {
+      stroke: #5b636a4b;
+      stroke-width: 2;
     }
     #top-wrapper {
       width: 100%;
@@ -183,11 +225,11 @@
               @import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");
             </style>
           </defs>
-          <!-- <linearGradient id="linearg" x1="0%" y1="0%" x2="100%" y2="0%"> -->
           <linearGradient id="linearg" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" style="stop-color: rgb(0, 140, 255); stop-opacity: 1" />
             <stop offset="100%" style="stop-color: rgb(255, 255, 255); stop-opacity: 0" />
           </linearGradient>
+          <path d="" id="graph_path" fill="url(#linearg)" fill-opacity="0.3" stroke-linecap="round" style="stroke: rgb(91, 99, 106); stroke-width: 1px"></path>
         </svg>
       </section>
       <footer id="footer"></footer>
