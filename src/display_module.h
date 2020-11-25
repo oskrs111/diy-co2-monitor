@@ -47,7 +47,8 @@ struct st_display_data
     uint32_t icon_warming : 1,
              icon_ble : 1,
              icon_calibrating: 1,
-             icon_reading: 1;
+             icon_reading: 1,
+             sensor_state: 1;
 
     uint16_t ppm;
     uint16_t battery;
@@ -66,6 +67,7 @@ void display_module_set_warming(uint8_t state);
 void display_module_set_ble(uint8_t state);
 void display_module_set_calibrating(uint8_t state);
 void display_module_set_reading(uint8_t state);
+void display_module_set_sensor_state(uint8_t state);
 
 void display_module_draw_ppm();
 void display_module_draw_ppm_graph();

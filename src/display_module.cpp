@@ -243,7 +243,12 @@ void display_module_set_ble(uint8_t state)
 
 void display_module_set_reading(uint8_t state)
 {
-    if(state > 0 )
+    if (display_data.sensor_state == SENSOR_NOT_FOUND) {
+        display.setColor(OLEDDISPLAY_COLOR::WHITE);
+        display.drawLine(114, 51, 126, 63);
+    }
+
+    if(state > 0)
     {
         display.drawCircle(120, 57, 6);
     }    
@@ -258,6 +263,10 @@ void display_module_set_calibrating(uint8_t state)
     display.drawRect(112, 32, 16, 16);    
 }
 
+void display_module_set_sensor_state(uint8_t state)
+{
+    display_data.sensor_state = state;
+}
 
 void display_module_defaults(struct display_preferences* preferences)
 {
