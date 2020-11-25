@@ -18,11 +18,12 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 static SoftwareSerial serial(SENSOR_RX_PIN, SENSOR_TX_PIN);                   
 static struct sensor_preferences* preferences = 0x00;
 static MHZ19 sensor;
+
 void sensor_module_init()
 {  
     preferences = &config_module_get_preferences()->sensor;
     serial.begin(SENSOR_BAUDRATE);                                    
-    sensor.begin(serial);                                
+    sensor.begin(serial);
     if(preferences > 0x00)
     {
         sensor.autoCalibration((preferences->flags & SENSOR_FLAGS_AUTOCALIBRATION_ENABLE)?1:0);  
@@ -38,4 +39,12 @@ void sensor_module_defaults(struct sensor_preferences* preferences)
 uint16_t sensor_module_ppm_read()
 {
     return sensor.getCO2(true, true);
+}
+
+uint16_t sensor_module_get_state()
+{
+    if (sensor.errorCode == RESULT_TIMEOUT) {
+        return SENSOR_NOT_FOUND;
+    }
+    return SENSOR_OK;
 }

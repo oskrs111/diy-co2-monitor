@@ -18,6 +18,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #define SENSOR_MAX_PPM 5000          
 #define SENSOR_MIN_PPM 0
 
+#define SENSOR_OK 0
+#define SENSOR_NOT_FOUND 1
+
 #define SENSOR_FLAGS_DEFAULT 0x00
 #define SENSOR_FLAGS_AUTOCALIBRATION_ENABLE 0x01
 
@@ -30,4 +33,6 @@ struct sensor_preferences
 void sensor_module_init();
 void sensor_module_defaults(struct sensor_preferences* preferences);
 uint16_t sensor_module_ppm_read();
+uint16_t sensor_module_get_state();
+
 #endif

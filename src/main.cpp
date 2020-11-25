@@ -21,7 +21,7 @@ void setup() {
   delay(1000); /**< Wait until serial terminal has done with platform messages.. */
   app_init();
   config_module_init();
-  sensor_module_init();  
+  sensor_module_init();
   display_module_init();
 }
 
@@ -49,6 +49,9 @@ void sensor_tasker()
   display_module_set_ppm(ppm);
   display_module_draw_ppm();  
   display_module_draw_ppm_graph();
+
+  uint16_t state = sensor_module_get_state();
+  display_module_set_sensor_state(state);
 }
 
 void battery_tasker()
