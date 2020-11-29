@@ -10,9 +10,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#define DISPLAY_TRACES_ENABLE 1
 #ifndef DISPLAY_MODULE_H
 #define DISPLAY_MODULE_H
+#define DISPLAY_TRACES_ENABLE 0
 #define DISPLAY_MODULE_HISTORICAL_SPAN 60   /**< 60 values */
 #define DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT 10
 #define DISPLAY_SDA_PIN 5
@@ -38,6 +38,8 @@ struct st_ppm_historical
     uint8_t ppm_length;     
     uint16_t ppm_max;
     uint16_t ppm_min;   
+    uint16_t ppm_maxd;
+    uint16_t ppm_mind;
     uint8_t _align[3];
 };
 
@@ -51,6 +53,8 @@ struct st_display_data
 
     uint16_t ppm;
     uint16_t battery;
+    float temperature;
+    char ipaddress[16];
 };
 
 void display_module_init();
@@ -61,15 +65,21 @@ void display_module_max_min_update(uint16_t ppm);
 void display_module_clear();
 void display_module_update();
 void display_module_set_ppm(uint16_t ppm);
+void display_module_set_temperature(float temp);
 void display_module_set_battery(uint16_t battery);
+void display_module_set_ipaddress(char* ipaddress);
 void display_module_set_warming(uint8_t state);
 void display_module_set_ble(uint8_t state);
 void display_module_set_calibrating(uint8_t state);
 void display_module_set_reading(uint8_t state);
 
+void display_module_draw_splash();
 void display_module_draw_ppm();
 void display_module_draw_ppm_graph();
 void display_module_draw_battery();
+void display_module_draw_ipaddress();
 
 void display_module_defaults(struct display_preferences* preferences);
+
+char* display_module_historical_2_json();
 #endif

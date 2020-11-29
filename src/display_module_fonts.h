@@ -13,6 +13,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #ifndef DISPLAY_MODULE_FONTS_H
 #define DISPLAY_MODULE_FONTS_H
 /**< https://oleddisplay.squix.ch/#/home */
+#include <stdint.h>
 #ifdef ARDUINO
 #define PROGMEM
 #endif

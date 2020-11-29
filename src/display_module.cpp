@@ -16,6 +16,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #include "sensor_module.h"  
 #include "display_module.h"  
 #include "display_module_fonts.h"  
+#include "display_module_icons.h"  
 #include "SSD1306Wire.h"  
 #if DEBUG_TRACES_ENABLE && DISPLAY_TRACES_ENABLE
     char debug_string[256];    
@@ -34,7 +35,9 @@ void display_module_init()
     display.init();
     display.setI2cAutoInit(true);
     display.flipScreenVertically();    
+    display_module_draw_splash();
     display_module_set_battery(100);
+    display_module_set_ipaddress((char*)"000.000");
     display_module_set_ppm(0);    
     display_module_set_warming(0);
     display_module_set_reading(0);
@@ -70,6 +73,8 @@ void display_module_historical_init()
     display_data.historical.ppm_length = 0; 
     display_data.historical.ppm_max = SENSOR_MIN_PPM;
     display_data.historical.ppm_min = SENSOR_MAX_PPM;               
+    display_data.historical.ppm_maxd = SENSOR_MAX_PPM;
+    display_data.historical.ppm_mind = SENSOR_MIN_PPM;
 }
 
 void display_module_clear()
@@ -88,14 +93,16 @@ void display_module_set_ppm(uint16_t ppm)
     display_module_push_historical(ppm);
 }
 
-void display_module_set_battery(uint16_t battery)
+void display_module_set_temperature(float temp)
 {
-    display_data.battery = battery;
+    display_data.temperature = temp;
 }
 
 void display_module_push_historical(uint16_t ppm)
 {    
-    static uint16_t span_average_count = 0;      
+    static uint16_t span_average_count = 0;    
+    struct st_ppm_value *p = 0x00;
+    uint16_t t = 0x00;      
     if((ppm == SENSOR_MIN_PPM) || (ppm == SENSOR_MAX_PPM))
     {
 #if DEBUG_TRACES_ENABLE && DISPLAY_TRACES_ENABLE        
@@ -126,9 +133,20 @@ void display_module_push_historical(uint16_t ppm)
         {
             display_data.historical.ppm_length++;
         }
-        span_average_count = 0;       
+        span_average_count = 0;    
+
+        display_data.historical.ppm_max = SENSOR_MIN_PPM;
+        display_data.historical.ppm_min = SENSOR_MAX_PPM;
+        p = display_data.historical.p_ppm_in->p_prev;
+        for(t = 0; t < DISPLAY_MODULE_HISTORICAL_SPAN; t++)
+        {
+            if(p->value != 0)
+            {
+                display_module_max_min_update(p->value);    
+            }
+            p = p->p_prev;
+        }
     }
-    display_module_max_min_update(ppm);
 }
 
 uint16_t display_module_get_average(uint16_t *data, uint16_t length)
@@ -141,6 +159,30 @@ uint16_t display_module_get_average(uint16_t *data, uint16_t length)
         sum += data[t];
     }
     return (uint16_t)(sum/(uint32_t)length);
+}
+
+void display_module_set_battery(uint16_t battery)
+{
+    display_data.battery = battery;
+}
+
+void display_module_set_ipaddress(char* ipaddress)
+{
+    if(strlen(&ipaddress[0]) < sizeof(display_data.ipaddress))
+    {
+        memcpy(&display_data.ipaddress, &ipaddress[0], strlen(&ipaddress[0]));
+        display_data.ipaddress[strlen(&ipaddress[0])] = 0;
+    }    
+    display_module_draw_ipaddress();
+}
+
+void display_module_draw_splash()
+{
+    display.clear();    
+    display.drawXbm(23,0,logo_image_width,logo_image_height,&logo_image[0]);
+    display.setFont(ArialMT_Plain_10);
+    display.drawString(23,54,"diy-co2-monitor");   
+    display.display();    
 }
 
 void display_module_draw_ppm()
@@ -159,10 +201,12 @@ void display_module_draw_ppm()
 
 void display_module_draw_ppm_graph()
 {
-    #define VERTICAL_START 32
+    #define VERTICAL_START 38
     #define VERTICAL_HEIGHT 30    
     struct st_ppm_value *p = 0x00;
     uint16_t t = 0x00;
+    uint16_t max = display_data.historical.ppm_max;
+    uint16_t min = display_data.historical.ppm_min;
     uint8_t x_pos = 0x00;
     uint8_t y_pos = 0x00;
     uint8_t step_size = 0x00;
@@ -173,19 +217,29 @@ void display_module_draw_ppm_graph()
         return;
     }
 
-    if(( display_data.historical.ppm_max - display_data.historical.ppm_min) < VERTICAL_HEIGHT)
+    if((max - min) < VERTICAL_HEIGHT)
     {
-        display_data.historical.ppm_max = ((( display_data.historical.ppm_max + display_data.historical.ppm_min)/2)+VERTICAL_HEIGHT);
-        display_data.historical.ppm_min = ((( display_data.historical.ppm_max + display_data.historical.ppm_min)/2)-VERTICAL_HEIGHT);
+        max = (((max + min)/2)+VERTICAL_HEIGHT);
+        min = (((max + min)/2)-VERTICAL_HEIGHT);
+    }
+    else
+    {
+        max += (VERTICAL_HEIGHT/4);
+        min -= (VERTICAL_HEIGHT/4);
     }
 
-    p = display_data.historical.p_ppm_in->p_prev;
-    step_size = ((display_data.historical.ppm_max - display_data.historical.ppm_min) / VERTICAL_HEIGHT);
+    /**< Update the main maxd/mind values in order to show same values in web dashboard*/
+    display_data.historical.ppm_maxd = max;
+    display_data.historical.ppm_mind = min;
+
+    step_size = ((max - min) / VERTICAL_HEIGHT);
     step_size = (step_size == 0x00)?1:step_size;
     x_pos = display_data.historical.ppm_length;
+
+    p = display_data.historical.p_ppm_in->p_prev;
     for(t = display_data.historical.ppm_length; t > 0; t--)
-    {
-        length = ((p->value - display_data.historical.ppm_min)/ step_size); 
+    {                
+        length = ((p->value - min)/ step_size); 
         y_pos = (VERTICAL_START + (VERTICAL_HEIGHT - length));
         display.drawVerticalLine(x_pos, y_pos, length);     
 #if 0
@@ -199,9 +253,9 @@ void display_module_draw_ppm_graph()
     display.drawHorizontalLine(0, 63, 64);
     display.drawVerticalLine(0, VERTICAL_START, 32); 
     display.setFont(ArialMT_Plain_10);
-    sprintf(&display_string[0],"%d", display_data.historical.ppm_max);
+    sprintf(&display_string[0],"%d", max);
     display.drawString(65,24,&display_string[0]);
-    sprintf(&display_string[0],"%d", display_data.historical.ppm_min);
+    sprintf(&display_string[0],"%d", min);
     display.drawString(65,54,&display_string[0]);    
 }
 
@@ -232,9 +286,23 @@ void display_module_draw_battery()
     display.drawRect(124, 2, 4, 8);    
 }
 
+void display_module_draw_ipaddress()
+{        
+    display.setFont(ArialMT_Plain_10);
+    display.drawString(95,0,&display_data.ipaddress[0]);
+    display.drawString(89,0,"<");
+}
+
 void display_module_set_warming(uint8_t state)
 {
-    display.drawRect(96, 48, 16, 16);    
+    if(state > 0 )
+    {
+        display.drawCircle(120, 40, 6);
+    }    
+    else
+    {
+        display.fillCircle(120, 40, 6);
+    }  
 }
 void display_module_set_ble(uint8_t state)
 {
@@ -262,4 +330,26 @@ void display_module_set_calibrating(uint8_t state)
 void display_module_defaults(struct display_preferences* preferences)
 {
     preferences->average_interval = DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT;
+}
+
+char* display_module_historical_2_json()
+{
+    static char buffer[((DISPLAY_MODULE_HISTORICAL_SPAN * 5) + 64)];
+    struct st_ppm_value *p = 0x00;
+    char* j = &buffer[0];
+    memset(j, 0x00, sizeof(buffer));
+    j += sprintf(j,"\"historical\":{\"span\":%d, \"interval\":%d, \"max\":%d, \"min\":%d, \"data\":[",         
+        DISPLAY_MODULE_HISTORICAL_SPAN, 
+        DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT,
+        display_data.historical.ppm_maxd,
+        display_data.historical.ppm_mind);
+    p = display_data.historical.p_ppm_in->p_prev;
+    for(uint16_t t = display_data.historical.ppm_length; t > 0; t--)
+    {                
+        j += sprintf(j,"%d,", p->value);
+        p = p->p_prev;    
+    }
+    if(display_data.historical.ppm_length > 0x00) j--; /**< To remove the last ',' */    
+    j += sprintf(j,"]}");
+    return &buffer[0]; /**< [0] position is the most recent measure */
 }
