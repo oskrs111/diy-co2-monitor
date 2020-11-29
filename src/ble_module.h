@@ -20,10 +20,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #include "config_module.h"
 
 /**< https://www.uuidgenerator.net/ */
-#define BLE_SERVICE_UUID        "fd3e6318-a9c8-4bf2-b1ee-0e68e2e1b097"
-#define BLE_CHARACTERISTIC_WSSID_UUID "7b7e359a-f9b9-4c67-9a21-84830895d538"
-#define BLE_CHARACTERISTIC_WPASW_UUID "179a0fd2-5cda-430f-afaa-f73acc8f96ad"
-#define BLE_CHARACTERISTIC_REBOOT_UUID "9b7b7d45-0e57-475b-98ee-1fdd64dfb36a" /**< Writing to this characteristic will reboot the device */
+#define BLE_SERVICE_UUID               "7b7e359a-f9b9-4c67-9a21-000000000000"
+#define BLE_CHARACTERISTIC_WSSID_UUID  "7b7e359a-f9b9-4c67-9a21-000000000001"
+#define BLE_CHARACTERISTIC_WPASW_UUID  "7b7e359a-f9b9-4c67-9a21-000000000002"
+#define BLE_CHARACTERISTIC_REBOOT_UUID "7b7e359a-f9b9-4c67-9a21-000000000003" /**< Writing anything to this characteristic will reboot the device */
 
 class bleCallback: public BLECharacteristicCallbacks 
 {

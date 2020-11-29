@@ -36,12 +36,12 @@ void setup() {
 void loop() {       
   
   if(timers_module_test(tid_500ms) > 0x00)
-  {
-    sensor_tasker();    
+  {    
   } 
 
   if(timers_module_test(tid_1000ms) > 0x00)
   {
+    sensor_tasker();    
     display_module_clear();
     display_tasker();    
     display_module_update();

@@ -15,3 +15,4 @@ https://community.platformio.org/t/esp32-pio-unified-debugger/4541/20
 
 MH-Z19B:
 https://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf
+https://revspace.nl/MHZ19

@@ -4,80 +4,147 @@
     const svgns = "http://www.w3.org/2000/svg";
     let _graph_svg = {};
     let _svg_cords = {};
+    let _svg_texts = {
+      h: [],
+      v: [],
+    };
+    let _svg_fct = {
+      h: [1, 0.8, 0.6, 0.4, 0.2, 0.0],
+      v: [0.03, 0.13, 0.23, 0.33, 0.43, 0.53, 0.63, 0.73, 0.83, 0.93],
+      wd: 0.8,
+      ht: 1,
+    };
     function init() {
-      /*
-          setInterval(() => {
-            upadte_data();
-          }, 1000);
-    */
-      _graph_svg = document.getElementById("graph_svg");
-      _svg_cords = _graph_svg.getBoundingClientRect();
+      setInterval(() => {
+        upadte_data();
+      }, 2000);
+
+      _svg_cords = document.getElementById("graph_svg").getBoundingClientRect();
+      _graph_svg = document.getElementById("graph_svg_g");
       build_secene();
+    }
+
+    function test() {
       let r = JSON.parse(
-        '{"ppm":828,"temp":29.00,"warming":1,"historical":{"span":60, "interval":10, "max":870, "min":829, "data":[830,831,831,829,830,831,831,833,833,832,832,834,835,837,838,840,842,841,841,841,842,842,841,841,842,842,845,843,842,845,846,846,846,847,848,848,848,849,849,848,849,849,851,852,855,856,857,857,859,861,862,863,865,866,868,869,870,869,869,867]}}'
+        '{"ppm":554,"temp":26.00,"warming":0,"historical":{"span":60, "interval":10, "max":566, "min":458, "data":[556,558,558,559,559,559,559,558,558,558,555,555,547,536,526,517,509,507,507,507,507,508,505,503,502,504,510,517,519,518,465]}}'
       );
       ppm_update(r.ppm);
       graph_update(r.historical);
+      update_secene(r.historical);
     }
 
     function upadte_data() {
       let request = new XMLHttpRequest();
-      request.open("GET", "http://192.168.1.145/data", true);
+      request.open("GET", "/data", true);
       request.send();
       request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
           let r = JSON.parse(request.responseText);
           ppm_update(r.ppm);
+          temp_update(r.temp);
           graph_update(r.historical);
+          update_secene(r.historical);
         } else {
         }
       };
     }
+
     function ppm_update(ppm) {
       let text = document.getElementById("ppm_text");
       text.textContent = ppm;
-      if (ppm > 999) text.attributes.x.nodeValue = 0;
-      else text.attributes.x.nodeValue = 100;
+      if (ppm > 999) text.setAttribute("x", 0);
+      else text.setAttribute("x", 200);
+    }
+
+    function temp_update(temp) {
+      let text = document.getElementById("temp_text");
+      text.textContent = temp;
     }
 
     function build_secene() {
-      hline_append(0, _svg_cords.height * 0.9, _svg_cords.width * 0.99);
-      hline_append(0, _svg_cords.height * 0.8, _svg_cords.width * 0.99);
-      hline_append(0, _svg_cords.height * 0.6, _svg_cords.width * 0.99);
-      hline_append(0, _svg_cords.height * 0.4, _svg_cords.width * 0.99);
-      hline_append(0, _svg_cords.height * 0.2, _svg_cords.width * 0.99);
+      let c = {};
+      let w1 = _svg_cords.width * _svg_fct.wd;
+      let w2 = _svg_cords.width * _svg_fct.wd;
+      let h = _svg_cords.height * _svg_fct.ht;
+      let s1 = 20;
+      let s2 = 25;
+      let x1 = w1 - 15;
+      let y1 = -8;
+      let x2 = -50;
+      let y2 = h + 50;
+      /**< Horizontal */
+      c = line_append(0, _svg_cords.height * _svg_fct.h[0], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0009 ppm"));
+      c = line_append(0, _svg_cords.height * _svg_fct.h[1], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0008 ppm"));
+      c = line_append(0, _svg_cords.height * _svg_fct.h[2], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0006 ppm"));
+      c = line_append(0, _svg_cords.height * _svg_fct.h[3], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0004 ppm"));
+      c = line_append(0, _svg_cords.height * _svg_fct.h[4], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0002 ppm"));
+      c = line_append(0, _svg_cords.height * _svg_fct.h[5], false, w1);
+      _svg_texts.h.push(text_append(x1, c.y + y1, s1, "0001 ppm"));
 
-      vline_append(_svg_cords.width * 0.0, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.1, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.2, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.3, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.4, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.5, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.6, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.7, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.8, _svg_cords.height * 0.9, 10);
-      vline_append(_svg_cords.width * 0.9, _svg_cords.height * 0.9, 10);
+      /**< Vertical */
+      c = line_append(w2 * _svg_fct.v[0], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[1], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[2], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[3], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[4], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[5], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[6], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[7], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[8], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
+      c = line_append(w2 * _svg_fct.v[9], h, true, 10);
+      _svg_texts.v.push(text_append(c.x + x2, y2, s2, ""));
     }
 
-    function graph_update(historical) {
+    function update_secene(h) {
+      let d = h.max - h.min;
+      for (let t in _svg_texts.h) {
+        _svg_texts.h[t].textContent = (h.min + d * (1 - _svg_fct.h[t])).toFixed(0) + " ppm";
+      }
+      /*
+      let s = h.span * h.interval;
+      let n = new Date().getTime();
+      for (t in _svg_texts.v) {
+        _svg_texts.v[t].textContent = timestamp(n, s * (1 - _svg_fct.v[t])) + "h";
+      }
+*/
+    }
+
+    function graph_update(h) {
+      if (h.data.length < 2) return;
       let d = "";
-      let w_height_factor = 0.8;
+      let w_height_factor = 1;
       let w_height = _svg_cords.height * w_height_factor;
       let v_offset = (_svg_cords.height * (1 - w_height_factor)) / 2;
-      let h_step = _svg_cords.width / historical.span;
-      d += `M 0,${_svg_cords.height.toFixed(2)} `;
-      let pos = w_height * normalize(historical.max, historical.min, historical.data[historical.data.length - 1]);
-      d += `0,${(w_height - pos).toFixed(2)} `;
+      let h_step = (_svg_cords.width * _svg_fct.wd) / h.span;
+      let vmin = v_offset + (w_height - w_height * normalize(h.max, h.min, h.min));
+      d += `M 0,${vmin} `;
 
-      let t = 0;
       let x_pos = 0;
-      for (t = historical.data.length - 2; t > 0; t--) {
-        pos = w_height * normalize(historical.max, historical.min, historical.data[t]);
+      let t = h.data.length - 1;
+      let pos = w_height * normalize(h.max, h.min, h.data[t]);
+      d += `${x_pos.toFixed(2)},${(v_offset + (w_height - pos)).toFixed(2)} `;
+
+      for (t = h.data.length - 2; t > 0; t--) {
+        pos = w_height * normalize(h.max, h.min, h.data[t]);
         d += `${x_pos.toFixed(2)},${(v_offset + (w_height - pos)).toFixed(2)} `;
         x_pos += h_step;
       }
       x_pos -= h_step;
-      d += `${x_pos.toFixed(0)}, ${_svg_cords.height.toFixed(0)} `;
+      d += `${x_pos.toFixed(2)}, ${vmin} `;
 
       let el = document.getElementById("graph_path");
       el.setAttribute("d", d);
@@ -87,25 +154,37 @@
       return (val - min) / (max - min);
     }
 
-    function vline_append(x, y, length) {
+    function timestamp(now, offset) {
+      let d = new Date(now - offset * 1000);
+      return d.toLocaleTimeString();
+    }
+
+    function line_append(x, y, vertical, length) {
       let l = document.createElementNS(svgns, "line");
       l.setAttribute("x1", x);
       l.setAttribute("y1", y);
-      l.setAttribute("x2", x);
-      l.setAttribute("y2", y + length);
+      if (vertical === true) {
+        l.setAttribute("x2", x);
+        l.setAttribute("y2", y + length);
+      } else {
+        l.setAttribute("x2", x + length);
+        l.setAttribute("y2", y);
+      }
       _graph_svg.appendChild(l);
+      return { x: x, y: y };
     }
 
-    function hline_append(x, y, length) {
-      let l = document.createElementNS(svgns, "line");
-      l.setAttribute("x1", x);
-      l.setAttribute("y1", y);
-      l.setAttribute("x2", x + length);
-      l.setAttribute("y2", y);
-      _graph_svg.appendChild(l);
+    function text_append(x, y, size, text) {
+      let t = document.createElementNS(svgns, "text");
+      t.setAttribute("x", x);
+      t.setAttribute("y", y);
+      t.setAttribute("font-size", size);
+      t.setAttribute("fill", "#5b636a");
+      t.setAttribute("font-family", "Roboto, sans-serif");
+      t.textContent = text;
+      _graph_svg.appendChild(t);
+      return t;
     }
-
-    function text_append(x, y, text) {}
   </script>
   <style>
     @import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");
@@ -127,6 +206,7 @@
       stroke: #5b636a4b;
       stroke-width: 2;
     }
+
     #top-wrapper {
       width: 100%;
       height: 100%;
@@ -144,7 +224,7 @@
     }
     #mid-wrapper {
       width: 100%;
-      height: calc(60% - 96px);
+      height: calc(55vh - 96px);
       border: 1px solid transparent;
       display: flex;
     }
@@ -161,12 +241,13 @@
     #aside {
       width: calc((100% / 3) * 1);
       height: 100%;
-      border: 1px solid #5b636a;
+      border: 1px solid transparent;
     }
     #graph-section {
       width: 100%;
-      height: 50%;
+      height: 45vh;
       border: 1px solid transparent;
+      padding-top: 1em;
     }
 
     #footer {
@@ -185,7 +266,7 @@
         display: none;
       }
       #graph-section {
-        height: calc(45% - 48px);
+        height: calc(45vh - 48px);
       }
 
       #footer {
@@ -201,7 +282,7 @@
           <svg
             width="100%"
             height="100%"
-            viewBox="0 0 500 75"
+            viewBox="0 0 1200 420"
             preserveAspectRatio="xMinYMid meet"
             style="background-color: white"
             xmlns="http://www.w3.org/2000/svg"
@@ -212,11 +293,99 @@
                 @import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");
               </style>
             </defs>
-            <text id="ppm_text" x="0" y="90" font-size="175" fill="#5b636a" font-family="Roboto, sans-serif">0000</text>
-            <text x="400" y="100" font-size="45" fill="#5b636a" font-family="Roboto, sans-serif">ppm</text>
+            <text id="ppm_text" x="0" y="400" font-size="450" fill="#5b636a" font-family="Roboto, sans-serif">0000</text>
+            <text x="1000" y="400" font-size="100" fill="#5b636a" font-family="Roboto, sans-serif">ppm</text>
           </svg>
         </section>
-        <aside id="aside"></aside>
+        <aside id="aside">
+          <svg width="50mm" height="28mm" viewBox="0 0 50 28" version="1.1" id="svg8">
+            <g id="layer1">
+              <g id="g850" transform="matrix(0.97030725,0,0,0.955685,-60.917505,-106.98367)" style="stroke-width: 1.03846">
+                <g id="g901" style="stroke-width: 1.03846">
+                  <ellipse
+                    style="
+                      fill: #ffffff;
+                      fill-opacity: 1;
+                      stroke: #5b636a;
+                      stroke-width: 1.35722;
+                      stroke-linejoin: round;
+                      stroke-miterlimit: 4;
+                      stroke-dasharray: none;
+                      stroke-opacity: 1;
+                    "
+                    id="path833-4"
+                    cx="32.317009"
+                    cy="143.51933"
+                    rx="7.8848114"
+                    ry="4.8540087"
+                    transform="matrix(0.87436939,-0.48526092,0.35294431,0.93564433,0,0)"
+                  />
+                  <ellipse
+                    style="
+                      fill: #5b636a;
+                      fill-opacity: 1;
+                      stroke: #5b636a;
+                      stroke-width: 1.34999;
+                      stroke-linejoin: round;
+                      stroke-miterlimit: 4;
+                      stroke-dasharray: none;
+                      stroke-opacity: 1;
+                    "
+                    id="path833"
+                    cx="28.306183"
+                    cy="149.47621"
+                    rx="15.501633"
+                    ry="8.4189901"
+                    transform="rotate(-24.58643)"
+                  />
+                  <ellipse
+                    style="
+                      fill: #ffffff;
+                      fill-opacity: 1;
+                      stroke: #5b636a;
+                      stroke-width: 1.35858;
+                      stroke-linejoin: round;
+                      stroke-miterlimit: 4;
+                      stroke-dasharray: none;
+                      stroke-opacity: 1;
+                    "
+                    id="path833-4-4"
+                    cx="51.384453"
+                    cy="159.77792"
+                    rx="10.30939"
+                    ry="6.4167399"
+                    transform="matrix(0.87078755,-0.49165949,0.3476572,0.93762171,0,0)"
+                  />
+                </g>
+                <text
+                  xml:space="preserve"
+                  style="
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 5.71595px;
+                    line-height: 1.25;
+                    font-family: sans-serif;
+                    fill: #5b636a;
+                    fill-opacity: 1;
+                    stroke: none;
+                    stroke-width: 0.5;
+                  "
+                  x="40"
+                  y="140.09296"
+                  id="text867"
+                >
+                  diy-co2-monitor
+                </text>
+              </g>
+            </g>
+          </svg>
+
+          <svg width="100%" height="100%" viewBox="0 0 521 444" version="1.1" id="svg8">
+            <text id="temp_text" x="50" y="300" font-size="300" fill="#5b636a" font-family="Roboto, sans-serif">00</text>
+            <text x="375" y="100" font-size="50" fill="#5b636a" font-family="Roboto, sans-serif">o</text>
+            <text x="400" y="150" font-size="100" fill="#5b636a" font-family="Roboto, sans-serif">C</text>
+          </svg>
+        </aside>
       </div>
       <section id="graph-section">
         <svg id="graph_svg" preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 1920 540">
@@ -229,7 +398,16 @@
             <stop offset="0%" style="stop-color: rgb(0, 140, 255); stop-opacity: 1" />
             <stop offset="100%" style="stop-color: rgb(255, 255, 255); stop-opacity: 0" />
           </linearGradient>
-          <path d="" id="graph_path" fill="url(#linearg)" fill-opacity="0.3" stroke-linecap="round" style="stroke: rgb(91, 99, 106); stroke-width: 1px"></path>
+          <g id="graph_svg_g" transform="translate(0, 25)">
+            <path
+              d=""
+              id="graph_path"
+              fill="url(#linearg)"
+              fill-opacity="0.3"
+              stroke-linecap="round"
+              style="stroke: rgb(91, 99, 106); stroke-width: 1px"
+            ></path>
+          </g>
         </svg>
       </section>
       <footer id="footer"></footer>

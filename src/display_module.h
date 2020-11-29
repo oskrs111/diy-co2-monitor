@@ -38,6 +38,8 @@ struct st_ppm_historical
     uint8_t ppm_length;     
     uint16_t ppm_max;
     uint16_t ppm_min;   
+    uint16_t ppm_maxd;
+    uint16_t ppm_mind;
     uint8_t _align[3];
 };
 

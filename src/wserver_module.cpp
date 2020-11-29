@@ -29,7 +29,7 @@ void wserver_module_init()
 }
 
 void wserver_root_request(AsyncWebServerRequest *request){
-    request->send(200, "text/html", html_buffer);
+    request->send_P(200, "text/html", html_buffer, html_length);
 }
 
 void wserver_get_request(AsyncWebServerRequest *request){

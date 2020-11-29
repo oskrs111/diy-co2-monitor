@@ -18,7 +18,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #define SENSOR_BAUDRATE 9600         
 #define SENSOR_MAX_PPM 5000          
 #define SENSOR_MIN_PPM 0
-#define SENSOR_WARMING_TIME 180 /**< 3min, sccording to MH-Z19B datasheet */
+#define SENSOR_WARMING_TIME (180/2) /**< 3min, sccording to MH-Z19B datasheet. /2 because ppm read is called each 2 secons*/
+#define SENSOR_PMM_DIFF_MAX 100
+#define SENSOR_TEMP_DIFF_MAX 2
+#define SENSOR_MAX_ERROR 10
 
 #define SENSOR_FLAGS_DEFAULT 0x00
 #define SENSOR_FLAGS_AUTOCALIBRATION_ENABLE 0x01
@@ -36,4 +39,5 @@ float sensor_module_temperature_get();
 uint16_t sensor_module_ppm_read();
 float sensor_module_temperature_read();
 uint8_t sensor_module_warming();
+void sensor_module_check_health();
 #endif

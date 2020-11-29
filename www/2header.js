@@ -13,7 +13,7 @@ write += `#define PROGMEM\r\n`;
 write += `#endif\r\n`;
 
 write += `#define html_length ${clean.length + 1}\r\n`;
-write += `const char html_buffer[] PROGMEM = {\r\n`;
+write += `const uint8_t html_buffer[] PROGMEM = {\r\n`;
 let crln = 0;
 for (let t = 0; t < clean.length; t++) {
   write += clean.charCodeAt(t) + ",";

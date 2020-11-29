@@ -73,6 +73,8 @@ void display_module_historical_init()
     display_data.historical.ppm_length = 0; 
     display_data.historical.ppm_max = SENSOR_MIN_PPM;
     display_data.historical.ppm_min = SENSOR_MAX_PPM;               
+    display_data.historical.ppm_maxd = SENSOR_MAX_PPM;
+    display_data.historical.ppm_mind = SENSOR_MIN_PPM;
 }
 
 void display_module_clear()
@@ -226,6 +228,10 @@ void display_module_draw_ppm_graph()
         min -= (VERTICAL_HEIGHT/4);
     }
 
+    /**< Update the main maxd/mind values in order to show same values in web dashboard*/
+    display_data.historical.ppm_maxd = max;
+    display_data.historical.ppm_mind = min;
+
     step_size = ((max - min) / VERTICAL_HEIGHT);
     step_size = (step_size == 0x00)?1:step_size;
     x_pos = display_data.historical.ppm_length;
@@ -335,15 +341,15 @@ char* display_module_historical_2_json()
     j += sprintf(j,"\"historical\":{\"span\":%d, \"interval\":%d, \"max\":%d, \"min\":%d, \"data\":[",         
         DISPLAY_MODULE_HISTORICAL_SPAN, 
         DISPLAY_MODULE_AVERAGE_INTERVAL_DEFAULT,
-        display_data.historical.ppm_max,
-        display_data.historical.ppm_min);
+        display_data.historical.ppm_maxd,
+        display_data.historical.ppm_mind);
     p = display_data.historical.p_ppm_in->p_prev;
     for(uint16_t t = display_data.historical.ppm_length; t > 0; t--)
     {                
         j += sprintf(j,"%d,", p->value);
         p = p->p_prev;    
     }
-    j--; /**< To remove the last ',' */    
+    if(display_data.historical.ppm_length > 0x00) j--; /**< To remove the last ',' */    
     j += sprintf(j,"]}");
-    return &buffer[0];
+    return &buffer[0]; /**< [0] position is the most recent measure */
 }

@@ -31,6 +31,8 @@ void sensor_module_init()
     {
         sensor.autoCalibration((preferences->flags & SENSOR_FLAGS_AUTOCALIBRATION_ENABLE)?1:0);  
     }    
+
+    sensor.printCommunication(false, true); /**< TEMPORAL */
     Serial.write("> sensor_module_init() => Done!\r\n");
 }
 
@@ -51,33 +53,88 @@ float sensor_module_temperature_get()
 
 uint16_t sensor_module_ppm_read()
 {   
+    static uint16_t ppm_last = 0x00; 
     uint16_t ppm_attempt = 0x00;
     if( warming > 0x00 ) warming--;
-    ppm_attempt = sensor.getCO2(false, true);
-    if(ppm_attempt > 0x00)
-    /**< Sometimes 'sensor.getCO2(...)' returns zero */
+    ppm_attempt = sensor.getCO2(true, true);    
+    
+    if((ppm_last == 0x00) && (ppm_attempt > 0x00))
+    {
+        ppm_last = ppm_attempt;
+    }    
+
+    if((ppm_attempt > 0x00) && (abs(ppm_last - ppm_attempt) < SENSOR_PMM_DIFF_MAX))
+    /**< Sometimes 'sensor.getCO2(...)' returns zero or very high values*/
     {
         ppm = ppm_attempt;
-    }
+    }    
 #if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
     Serial.print("> sensor_module_ppm_read() => ");
     Serial.println(ppm);
 #endif    
+
+    sensor_module_check_health();
     return ppm;
 }
 
 float sensor_module_temperature_read()
-{       
+{           
+    static uint16_t temp_last = 0x00; 
     temp = sensor.getTemperature(false, true);    
+    if(temp_last == 0x00)
+    {
+        temp_last = temp;
+    }    
+
+    if(abs(temp_last - temp) > SENSOR_TEMP_DIFF_MAX)
+    {
+        temp = temp_last;
+    }
+    else
+    {
+        temp_last = temp;
+    }
+
 #if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
     Serial.print("> sensor_module_temp_read() => ");
     Serial.println(temp);
 #endif    
+    sensor_module_check_health();
     return temp;
 }
 
 uint8_t sensor_module_warming()
 {
-    static uint8_t r = (warming > 0)?0x01:0x00;
-    return r;
+   static uint8_t w = 0x00;
+   w =  (warming > 0)?0x01:0x00;
+   return w;
+}
+
+void sensor_module_check_health()
+{
+    static uint8_t error_counter = 0x00;
+    switch(sensor.errorCode)
+    {        	    
+	    case RESULT_TIMEOUT:
+            error_counter++;
+	    case RESULT_MATCH:
+	    case RESULT_CRC:
+	    case RESULT_FILTER:            
+            Serial.print("> sensor_module_check_health(errorCode, count) => ");
+            Serial.print(sensor.errorCode);
+            Serial.print(", ");
+            Serial.println(error_counter);
+        break;
+
+        case RESULT_OK:
+        default:
+        break;
+    }
+
+    if(error_counter > SENSOR_MAX_ERROR)
+    {
+        sensor.recoveryReset();
+        error_counter = 0x00;
+        Serial.println("> sensor_module_check_health() => reset");
+    }
 }
