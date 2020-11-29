@@ -1,6 +1,5 @@
-## **diy-co2-monitor**
-
 # DIY, low cost esp-platform based CO2 monitor ;-)
+![Logo](https://github.com/oskrs111/diy-co2-monitor/blob/main/img/logo.png)
 
 > **This project is under development!!!** \
 > **Current release should work for real-time CO2 monitoring 'out-of-the-box'.**
