@@ -14,6 +14,7 @@ Check [wiki](https://github.com/oskrs111/diy-co2-monitor/wiki) for details.
 - 60 points historical data graph (with configurable average time).
 - BLE interface for wifi setup using 3rd party app.
 - Web dashboard for big display monitoring.
+- Zero point calibration function.
 - More coming soon...
 
 ![prototype picture](./img/diy-co2-monitor-live-1.gif)
