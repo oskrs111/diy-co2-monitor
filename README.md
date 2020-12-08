@@ -12,8 +12,8 @@ Check [wiki](https://github.com/oskrs111/diy-co2-monitor/wiki) for details.
 
 - Realtime CO2 level (ppm) monitoring.
 - 60 points historical data graph (with configurable average time).
-- BLE interface for wifi setup using 3rd party app.
-- Web dashboard for big display monitoring.
+- [BLE interface](https://github.com/oskrs111/diy-co2-monitor/wiki/BLE-Interface) for wifi setup using 3rd party app.
+- [Web dashboard](https://github.com/oskrs111/diy-co2-monitor/wiki/Web-Interface) for big display monitoring.
 - Zero point calibration function.
 - More coming soon...
 
