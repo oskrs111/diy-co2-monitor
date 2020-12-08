@@ -18,12 +18,14 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include "config_module.h"
+#include "sensor_module.h"
 
 /**< https://www.uuidgenerator.net/ */
 #define BLE_SERVICE_UUID               "7b7e359a-f9b9-4c67-9a21-000000000000"
 #define BLE_CHARACTERISTIC_WSSID_UUID  "7b7e359a-f9b9-4c67-9a21-000000000001"
 #define BLE_CHARACTERISTIC_WPASW_UUID  "7b7e359a-f9b9-4c67-9a21-000000000002"
 #define BLE_CHARACTERISTIC_REBOOT_UUID "7b7e359a-f9b9-4c67-9a21-000000000003" /**< Writing anything to this characteristic will reboot the device */
+#define BLE_CHARACTERISTIC_CALSEN_UUID "7b7e359a-f9b9-4c67-9a21-000000000004" /**< Writing anything to this characteristic will calibrate zero point of sensor */
 
 class bleCallback: public BLECharacteristicCallbacks 
 {
@@ -43,6 +45,11 @@ class bleCallback: public BLECharacteristicCallbacks
       {
           ESP.restart();
       }
+
+      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_CALSEN_UUID))  == true)
+      {
+          sensor_module_zero_calibrate();
+      }      
     }
 
     void onRead(BLECharacteristic* pCharacteristic)

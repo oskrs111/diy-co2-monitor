@@ -23,9 +23,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="231.01374"
-     inkscape:cy="469.32208"
+     inkscape:zoom="1.4"
+     inkscape:cx="279.63064"
+     inkscape:cy="536.64126"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -56,15 +56,15 @@
        id="g850"
        inkscape:export-xdpi="58.9547"
        inkscape:export-ydpi="58.9547"
-       transform="matrix(1.5394138,0,0,1.5394138,-33.865296,-60.399848)"
-       style="stroke-width:0.649598">
+       transform="matrix(2.5672713,0,0,2.5833743,-98.395898,-178.01498)"
+       style="stroke-width:0.388303">
       <g
          id="g901"
          inkscape:export-xdpi="58.954674"
          inkscape:export-ydpi="58.954674"
-         style="stroke-width:0.649598">
+         style="stroke-width:0.388303">
         <ellipse
-           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.848998;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.507496;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="path833-4"
            cx="32.317009"
            cy="143.51933"
@@ -72,7 +72,7 @@
            ry="4.8540087"
            transform="matrix(0.87436939,-0.48526092,0.35294431,0.93564433,0,0)" />
         <ellipse
-           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.844477;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.504793;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="path833"
            cx="28.306183"
            cy="149.47621"
@@ -80,7 +80,7 @@
            ry="8.4189901"
            transform="rotate(-24.58643)" />
         <ellipse
-           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.849849;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.508005;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="path833-4-4"
            cx="51.384453"
            cy="159.77792"
@@ -90,7 +90,7 @@
       </g>
       <text
          xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:5.71595px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.171873"
+         style="font-style:normal;font-weight:normal;font-size:5.71595px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.102739"
          x="62.530476"
          y="140.09296"
          id="text867"><tspan
@@ -98,7 +98,7 @@
            id="tspan865"
            x="62.530476"
            y="140.09296"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.171873">diy-co2-monitor</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.102739">diy-co2-monitor</tspan></text>
     </g>
   </g>
 </svg>

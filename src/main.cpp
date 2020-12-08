@@ -63,7 +63,7 @@ void sensor_tasker()
   {
     display_module_set_temperature(sensor_module_temperature_read());
   }
-  else
+  else  
   {    
     display_module_set_ppm(sensor_module_ppm_read());
   }
@@ -73,7 +73,11 @@ void display_tasker()
 {
   static uint8_t cnt = 0;
   display_module_draw_ppm();  
-  display_module_draw_ppm_graph();
+  if(sensor_module_warming() == 0x00)
+  /**< Do not graph the values until the sensor warming has finished */
+  {
+    display_module_draw_ppm_graph();
+  }
   display_module_set_reading(((cnt++) & 0x01)?1:0);
   display_module_set_warming((sensor_module_warming() & cnt)?1:0);
   display_module_set_ipaddress(wifi_module_get_ipaddress(2));

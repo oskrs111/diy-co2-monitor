@@ -35,6 +35,10 @@ void ble_module_init()
   pCharacteristic_reboot->setCallbacks(new bleCallback);
   pCharacteristic_reboot->setValue("REBOOT");
 
+  pCharacteristic_reboot = pService->createCharacteristic(BLE_CHARACTERISTIC_CALSEN_UUID, BLECharacteristic::PROPERTY_READ |BLECharacteristic::PROPERTY_WRITE);
+  pCharacteristic_reboot->setCallbacks(new bleCallback);
+  pCharacteristic_reboot->setValue("CALSEN");
+
   pService->start();  
   pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(BLE_SERVICE_UUID);
