@@ -19,20 +19,19 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 static SoftwareSerial serial(SENSOR_RX_PIN, SENSOR_TX_PIN);                   
 static uint16_t warming = SENSOR_WARMING_TIME;
 static struct sensor_preferences* preferences = 0x00;
-static MHZ19 sensor;
+static MHZ19 sensor(&serial);
 static uint16_t ppm = 0;
-static float temp = 0;
+static float temp = -100;
 void sensor_module_init()
 {  
     preferences = &config_module_get_preferences()->sensor;
-    serial.begin(SENSOR_BAUDRATE);                                    
-    sensor.begin(serial);                                
+    serial.begin(SENSOR_BAUDRATE);                                                                       
     if(preferences > 0x00)
-    {
-        sensor.autoCalibration((preferences->flags & SENSOR_FLAGS_AUTOCALIBRATION_ENABLE)?1:0);  
+    {        
+        sensor.setAutoCalibration((preferences->flags & SENSOR_FLAGS_AUTOCALIBRATION_ENABLE)?1:0);  
+        sensor.setRange(MHZ19_RANGE_5000);
     }    
-
-    sensor.printCommunication(false, true); /**< TEMPORAL */
+    
     Serial.write("> sensor_module_init() => Done!\r\n");
 }
 
@@ -55,45 +54,41 @@ uint16_t sensor_module_ppm_read()
 {   
     static uint16_t ppm_last = 0x00; 
     uint16_t ppm_attempt = 0x00;
+
+    if(sensor_module_check_health() == 0x00)
+        return ppm;
+
     if( warming > 0x00 ) warming--;
-    ppm_attempt = sensor.getCO2(true, true);    
+    ppm_attempt = sensor.getCO2();    
     
     if((ppm_last == 0x00) && (ppm_attempt > 0x00))
     {
         ppm_last = ppm_attempt;
     }    
+    ppm = ppm_attempt;
 
-    if((ppm_attempt > 0x00) && (abs(ppm_last - ppm_attempt) < SENSOR_PMM_DIFF_MAX))
-    /**< Sometimes 'sensor.getCO2(...)' returns zero or very high values*/
-    {
-        ppm = ppm_attempt;
-    }    
 #if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
     Serial.print("> sensor_module_ppm_read() => ");
     Serial.println(ppm);
 #endif    
-
-    sensor_module_check_health();
+    
     return ppm;
 }
 
 float sensor_module_temperature_read()
 {           
     static uint16_t temp_last = 0x00; 
-    temp = sensor.getTemperature(false, true);    
+
+    if(sensor_module_check_health() == 0x00)
+        return temp;
+
+    temp = sensor.getTemperature();    
     if(temp_last == 0x00)
     {
         temp_last = temp;
     }    
+temp = temp_last;
 
-    if(abs(temp_last - temp) > SENSOR_TEMP_DIFF_MAX)
-    {
-        temp = temp_last;
-    }
-    else
-    {
-        temp_last = temp;
-    }
 
 #if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
     Serial.print("> sensor_module_temp_read() => ");
@@ -110,31 +105,43 @@ uint8_t sensor_module_warming()
    return w;
 }
 
-void sensor_module_check_health()
+uint8_t sensor_module_check_health()
 {
     static uint8_t error_counter = 0x00;
-    switch(sensor.errorCode)
+    MHZ19_RESULT err = sensor.retrieveData();
+    switch(err)
     {        	    
-	    case RESULT_TIMEOUT:
-            error_counter++;
-	    case RESULT_MATCH:
-	    case RESULT_CRC:
-	    case RESULT_FILTER:            
-            Serial.print("> sensor_module_check_health(errorCode, count) => ");
-            Serial.print(sensor.errorCode);
-            Serial.print(", ");
-            Serial.println(error_counter);
-        break;
+        case MHZ19_RESULT_OK:
+            return 1;
 
-        case RESULT_OK:
+        case MHZ19_RESULT_ERR_UNKNOWN:
+        case MHZ19_RESULT_ERR_TIMEOUT:
+            error_counter++;
+        case MHZ19_RESULT_ERR_FB:
+        case MHZ19_RESULT_ERR_SB:
+        case MHZ19_RESULT_ERR_CRC:
+            Serial.print("> sensor_module_check_health(errorCode, count) => ");
+            Serial.print(err);
+            Serial.print(", ");
+            Serial.println(error_counter);                
         default:
         break;
     }
 
     if(error_counter > SENSOR_MAX_ERROR)
     {
-        sensor.recoveryReset();
+        //TODO: Send reset....
         error_counter = 0x00;
         Serial.println("> sensor_module_check_health() => reset");
     }
+
+    return 0;
+}
+
+void sensor_module_zero_calibrate()
+/**< WARNING: Do not call this function if the sensor has not been working at last 20 minutes on a ~400ppm environment!
+ * Check manufacturer datasheet for details.
+ */
+{
+    sensor.calibrateZero();
 }
