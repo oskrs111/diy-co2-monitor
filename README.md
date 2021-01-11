@@ -15,6 +15,7 @@ Check [wiki](https://github.com/oskrs111/diy-co2-monitor/wiki) for details.
 - [BLE interface](https://github.com/oskrs111/diy-co2-monitor/wiki/BLE-Interface) for wifi setup using 3rd party app.
 - [Web dashboard](https://github.com/oskrs111/diy-co2-monitor/wiki/Web-Interface) for big display monitoring.
 - Zero point calibration function.
+- [Chrome extension](https://github.com/oskrs111/diy-co2-monitor-chrome-extension) for real time CO2 level monitoring.
 - More coming soon...
 
 ![prototype picture](./img/diy-co2-monitor-live-1.gif)
