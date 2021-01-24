@@ -28,6 +28,9 @@ struct sensor_preferences
 {
     uint8_t flags;
     uint8_t _align;
+#ifdef BUZZER_MODULE    
+    uint16_t alarm_value;
+#endif    
 };
 
 void sensor_module_init();

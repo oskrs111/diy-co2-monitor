@@ -38,6 +38,10 @@ void sensor_module_init()
 void sensor_module_defaults(struct sensor_preferences* preferences)
 {
     preferences->flags = SENSOR_FLAGS_DEFAULT;        
+    preferences->_align = 0x00;
+#ifdef BUZZER_MODULE
+    preferences->alarm_value = 800;
+#endif    
 }
 
 uint16_t sensor_module_ppm_get()
@@ -87,8 +91,7 @@ float sensor_module_temperature_read()
     {
         temp_last = temp;
     }    
-temp = temp_last;
-
+    temp = (float)temp_last;
 
 #if DEBUG_TRACES_ENABLE && SENSOR_TRACES_ENABLE    
     Serial.print("> sensor_module_temp_read() => ");

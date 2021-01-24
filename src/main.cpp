@@ -20,6 +20,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #include "wifi_module.h"
 #include "wserver_module.h"
 #include "ble_module.h"
+#ifdef BUZZER_MODULE
+#include "buzzer_module.h"
+#endif
 
 void setup() {  
   app_init();
@@ -30,7 +33,14 @@ void setup() {
   wserver_module_init(); 
   ble_module_init();
   timers_module_init();
+  #ifdef BUZZER_MODULE    
+  buzzer_module_init();
+  buzzer_module_set(BUZZER_ON);
   delay(1000);    
+  buzzer_module_set(BUZZER_OFF);
+  #else
+  delay(1000);    
+  #endif    
 }
 
 void loop() {       
@@ -45,6 +55,9 @@ void loop() {
     display_module_clear();
     display_tasker();    
     display_module_update();
+    #ifdef BUZZER_MODULE    
+    buzzer_tasker();
+    #endif
   }
 }
 
@@ -87,3 +100,17 @@ void battery_tasker()
 {
   display_module_set_battery(100);
 }
+
+#ifdef BUZZER_MODULE    
+void buzzer_tasker()
+{
+  if(sensor_module_ppm_get() > config_module_get_preferences()->sensor.alarm_value)  
+  {
+    buzzer_module_set(BUZZER_ON);
+  }
+  else
+  {
+    buzzer_module_set(BUZZER_OFF);
+  }
+}
+#endif

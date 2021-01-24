@@ -10,15 +10,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef MAIN_H
-#define MAIN_H
-#define APP_SERIAL_BAUDRATE 115200
+#ifndef BUZZER_MODULE_H
+#define BUZZER_MODULE_H
+#include <string.h>
+#include <Arduino.h>
+#define BUZZER_ON 1
+#define BUZZER_OFF 0
+#define BUZZER_PIN 16
 
-void app_init();
-void sensor_tasker();
-void display_tasker();
-void battery_tasker();
-#ifdef BUZZER_MODULE    
-void buzzer_tasker();
-#endif
+void buzzer_module_init();
+void buzzer_module_set(uint8_t state);
 #endif
