@@ -26,6 +26,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #define BLE_CHARACTERISTIC_WPASW_UUID  "7b7e359a-f9b9-4c67-9a21-000000000002"
 #define BLE_CHARACTERISTIC_REBOOT_UUID "7b7e359a-f9b9-4c67-9a21-000000000003" /**< Writing anything to this characteristic will reboot the device */
 #define BLE_CHARACTERISTIC_CALSEN_UUID "7b7e359a-f9b9-4c67-9a21-000000000004" /**< Writing anything to this characteristic will calibrate zero point of sensor */
+#ifdef BUZZER_MODULE
+#define BLE_CHARACTERISTIC_PPMALR_UUID "7b7e359a-f9b9-4c67-9a21-000000000005" /**< To set the buzzer alert threshold */
+#endif
 
 class bleCallback: public BLECharacteristicCallbacks 
 {
@@ -41,15 +44,22 @@ class bleCallback: public BLECharacteristicCallbacks
           config_module_set_parameter("wifi.password", (void*)pCharacteristic->getValue().c_str());
       }
 
-      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_REBOOT_UUID))  == true)
+      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_REBOOT_UUID)) == true)
       {
           ESP.restart();
       }
 
-      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_CALSEN_UUID))  == true)
+      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_CALSEN_UUID)) == true)
       {
           sensor_module_zero_calibrate();
       }      
+
+#ifdef BUZZER_MODULE
+      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_PPMALR_UUID)) == true)
+      {
+          config_module_set_parameter("ppm.alarm_value", (void*)pCharacteristic->getValue().c_str());
+      }      
+#endif
     }
 
     void onRead(BLECharacteristic* pCharacteristic)
@@ -63,6 +73,12 @@ class bleCallback: public BLECharacteristicCallbacks
       {
           pCharacteristic->setValue((uint8_t*)&config_module_get_preferences()->wifi.password[0], strlen(&config_module_get_preferences()->wifi.password[0]));
       }
+#ifdef BUZZER_MODULE
+      if(pCharacteristic->getUUID().equals(BLEUUID(BLE_CHARACTERISTIC_PPMALR_UUID))  == true)
+      {
+          pCharacteristic->setValue(config_module_get_preferences()->sensor.alarm_value);
+      }
+#endif      
     }
 };
 void ble_module_init();

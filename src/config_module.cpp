@@ -73,6 +73,7 @@ void config_module_set_parameter(char* parameter, void* value)
         preferences.preferences.wifi.flags |= WIFI_FLAGS_ENABLE;
         Serial.print((char*)&preferences.preferences.wifi.ssid[0]);
     }
+    
     if(strcmp("wifi.password", parameter) == 0x00)
     {
         len = (strlen((char*)value) < sizeof(preferences.preferences.wifi.password))?strlen((char*)value):sizeof(preferences.preferences.wifi.password);
@@ -81,6 +82,13 @@ void config_module_set_parameter(char* parameter, void* value)
         preferences.preferences.wifi.flags |= WIFI_FLAGS_ENABLE;
         Serial.print((char*)&preferences.preferences.wifi.password[0]);
     }    
+#ifdef BUZZER_MODULE
+    if(strcmp("ppm.alarm_value", parameter) == 0x00)
+    {
+        preferences.preferences.sensor.alarm_value = atoi((char*)value);
+        Serial.print(preferences.preferences.sensor.alarm_value);
+    }    
+#endif    
     Serial.println();
     if( pref_interface.putBytes(PREFERENCES_NAMESPACE, &preferences.data[0], sizeof(union preferences_union)) > 0x00)
     {
