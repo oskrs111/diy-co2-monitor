@@ -46,7 +46,10 @@ void wserver_get_request(AsyncWebServerRequest *request){
                     "," + display_module_historical_2_json() +
                     "}";
 
-    request->send(200, "application/json", data);    
+    AsyncWebServerResponse *response = request->beginResponse(200, "application/json", data);
+    response->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(response);
+    //request->send(200, "application/json", data);    
 }
 
 void wserver_post_request(AsyncWebServerRequest *request){
